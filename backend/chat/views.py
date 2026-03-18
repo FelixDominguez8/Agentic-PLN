@@ -169,6 +169,18 @@ def _invoke_agentic(message: str) -> str:
     return sistema_agentico_multidisciplinario(message)
 
 
+def _build_agentic_input(message: str, chat_history: str | None = None) -> str:
+    normalized_history = (chat_history or "").strip()
+    if not normalized_history or normalized_history == NO_CHAT_HISTORY:
+        return message
+
+    return (
+        "Historial de la conversación:\n"
+        f"{normalized_history}\n\n"
+        f"Consulta actual del usuario: {message}"
+    )
+
+
 class ChatDeleteRequestSerializer(serializers.Serializer):
     chat_id = serializers.IntegerField(min_value=1)
 
@@ -295,9 +307,11 @@ class MessageListCreateView(APIView):
             sender_id=USER_ROLE,
             send_time=now_utc(),
         )
+        chat_history = _build_chat_history(chat)
+        agentic_input = _build_agentic_input(user_message.content, chat_history)
 
         try:
-            answer = _invoke_agentic(user_message.content)
+            answer = _invoke_agentic(agentic_input)
             sources = []
         except Exception as exc:
             logger.error("Error al generar respuesta agentic para el chat %s: %s", chat_id, exc, exc_info=True)
@@ -356,9 +370,12 @@ def chat_view(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    chat_history = _normalize_chat_history_payload(request.data.get("chat_history"))
+    agentic_input = _build_agentic_input(message, chat_history)
+
     try:
-        answer = _invoke_agentic(message)
-        return Response({"answer": answer, "sources": []})
+        answer = _invoke_agentic(agentic_input)
+        return Response({"answer": answer, "sources": [], "chat_history": chat_history})
 
     except Exception as exc:
         logger.error("Error en chat_view agentic: %s", exc, exc_info=True)
