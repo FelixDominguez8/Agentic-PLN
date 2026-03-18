@@ -12,4 +12,4 @@ langdetect
 
 # --- Utilidades y API ---
 python-dotenv
-requestss
+requests
