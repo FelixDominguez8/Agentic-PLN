@@ -1,0 +1,15 @@
+# --- Motor de Inteligencia y Embeddings ---
+sentence-transformers>=3.0.1
+transformers
+torch
+
+# --- Base de Datos de Conocimiento ---
+chromadb
+
+# --- Manejo de Documentos y PDF ---
+pymupdf
+langdetect
+
+# --- Utilidades y API ---
+python-dotenv
+requestss
