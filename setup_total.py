@@ -1,35 +1,53 @@
-import subprocess
 import os
+import sys
 
-# Lista de carpetas y sus respectivos setups
-setups = [
-    ("Epidemiologia", "setup.py"),
-    ("Cardiologia", "setup.py"),
-    ("Pediatria", "setup.py")
-]
+# Añadimos la carpeta Agentes al path para poder importar el setup genérico
+from Agentes.setup import run_setup
 
-print("--- INICIANDO PROCESAMIENTO DE TODOS LOS GRUPOS ---")
+# ---------------- CONFIG ----------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+# ----------------------------------------
 
-for carpeta, script in setups:
-    # Construimos la ruta completa al archivo para verificar que existe
-    ruta_script = os.path.join(carpeta, script)
-    
-    if os.path.exists(ruta_script):
-        print(f"\n> Entrando a la carpeta '{carpeta}' y ejecutando {script}...")
+def regenerate_all_embeddings():
+    print("\n--- INICIANDO REGENERACIÓN DINÁMICA DE EMBEDDINGS ---")
+
+    # 1. Validar que la carpeta data exista
+    if not os.path.exists(DATA_DIR):
+        print(f"❌ Error: No se encontró la carpeta de datos en {DATA_DIR}")
+        return
+
+    # 2. Escanear automáticamente todas las subcarpetas en 'data/'
+    # Cada subcarpeta (Cardiologia, Pediatria, etc.) será una colección
+    ramas = [d for d in os.listdir(DATA_DIR) if os.path.isdir(os.path.join(DATA_DIR, d))]
+
+    if not ramas:
+        print("⚠️ No se encontraron ramas médicas en la carpeta 'data/'.")
+        return
+
+    for rama in ramas:
+        path_rama = os.path.join(DATA_DIR, rama)
         
-        # El truco está en el parámetro 'cwd'
-        # Esto hace que el script crea que está dentro de su propia carpeta
-        resultado = subprocess.run(
-            ["python", script], 
-            cwd=carpeta,  # <--- ESTO ARREGLA EL ERROR DEL PDF
-            capture_output=False
-        )
-        
-        if resultado.returncode == 0:
-            print(f"✅ {carpeta} terminado con éxito.")
+        # 3. Listar todos los archivos PDF dentro de esa rama específica
+        pdf_files = [
+            os.path.join(path_rama, f) 
+            for f in os.listdir(path_rama) 
+            if f.lower().endswith('.pdf')
+        ]
+
+        if pdf_files:
+            print(f"\n> Procesando rama: '{rama}' ({len(pdf_files)} PDFs encontrados)")
+            try:
+                # Llamamos a la función dinámica de tu Agentes/setup.py
+                # Usamos el nombre de la carpeta como collection_name
+                run_setup(collection_name=rama.lower(), pdf_files=pdf_files)
+                print(f"✅ {rama} procesado con éxito.")
+            except Exception as e:
+                print(f"❌ Error procesando {rama}: {e}")
         else:
-            print(f"❌ Hubo un error en {carpeta}.")
-    else:
-        print(f"⚠️ No se encontró el archivo: {ruta_script}")
+            print(f"⚠️ Saltando '{rama}': No contiene archivos PDF.")
 
-print("\n--- PROCESO FINALIZADO ---")
+    print("\n--- PROCESO FINALIZADO ---")
+
+if __name__ == "__main__":
+    regenerate_all_embeddings()
