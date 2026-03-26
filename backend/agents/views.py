@@ -13,7 +13,9 @@ from .services import (
     create_branch,
     list_branch_files,
     save_pdfs,
-    rebuild_embeddings
+    rebuild_embeddings,
+    delete_branch,
+    delete_pdf
 )
 
 
@@ -162,3 +164,48 @@ def rebuild_embeddings_view(request):
         return Response({
             "error": str(e)
         }, status=500)
+
+
+@swagger_auto_schema(
+    method="delete",
+    operation_description="Eliminar una rama médica completa"
+)
+@api_view(["DELETE"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def delete_branch_view(request, branch):
+
+    result = delete_branch(branch)
+    if result is True:
+
+        return Response({
+            "message": f"Rama '{branch}' eliminada correctamente"
+        })
+    else:
+        return Response({
+            "error": result
+        }, status=500)
+    
+
+
+@swagger_auto_schema(
+    method="delete",
+    operation_description="Eliminar un PDF específico de una rama"
+)
+@api_view(["DELETE"])
+@authentication_classes([])
+@permission_classes([AllowAny])
+def delete_pdf_view(request, branch, filename):
+
+    result = delete_pdf(branch, filename)
+
+    if result is True:
+
+        return Response({
+            "message": f"Archivo '{filename}' eliminado de '{branch}'"
+        })
+    else:
+        return Response({
+            "error": result
+        }, status=500)
+        

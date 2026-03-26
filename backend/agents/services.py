@@ -79,3 +79,33 @@ def rebuild_embeddings():
         raise Exception("Error regenerando embeddings")
 
     return "Proceso completado"
+
+def delete_branch(branch: str):
+
+    branch_path = AGENTS_DATA_DIR / branch
+
+    if not branch_path.exists():
+        raise Exception("La rama no existe")
+
+    for file in branch_path.iterdir():
+        file.unlink()
+
+    branch_path.rmdir()
+
+    return True
+
+def delete_pdf(branch: str, filename: str):
+
+    branch_path = AGENTS_DATA_DIR / branch
+
+    if not branch_path.exists():
+        raise Exception("La rama no existe")
+
+    file_path = branch_path / filename
+
+    if not file_path.exists():
+        raise Exception("El archivo no existe")
+
+    file_path.unlink()
+
+    return True
