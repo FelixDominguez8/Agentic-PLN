@@ -26,7 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
-    from manager import sistema_agentico_multidisciplinario
+    from orchestrator import sistema_agentico_multidisciplinario
 except Exception as exc:
     sistema_agentico_multidisciplinario = None
     logger.warning("No se pudo importar sistema_agentico_multidisciplinario desde manager.py: %s", exc)
