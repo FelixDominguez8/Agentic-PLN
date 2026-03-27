@@ -370,13 +370,16 @@ def chat_view(request):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+
     chat_history = _normalize_chat_history_payload(request.data.get("chat_history"))
-    agentic_input = _build_agentic_input(message, chat_history)
+    #agentic_input = _build_agentic_input(message, chat_history)
 
+    #try:
+    #    answer = _invoke_agentic(agentic_input)
+    #    return Response({"answer": answer, "sources": [], "chat_history": chat_history})
     try:
-        answer = _invoke_agentic(agentic_input)
+        answer = _invoke_agentic(message=message)
         return Response({"answer": answer, "sources": [], "chat_history": chat_history})
-
     except Exception as exc:
         logger.error("Error en chat_view agentic: %s", exc, exc_info=True)
         return Response({"error": str(exc)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
