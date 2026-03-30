@@ -1,7 +1,7 @@
 
-# BotMedics Backend
+# MedBotics Backend
 
-BotMedics es una plataforma diseñada para ejecutar agentes de IA especializados en distintos dominios. Este repositorio contiene el **backend**, encargado de procesar documentos PDF, gestionar el entrenamiento de agentes específicos y enrutar consultas mediante un sistema agentic ya configurado que identifica automáticamente el área adecuada para cada petición.
+MedBotics es una plataforma diseñada para ejecutar agentes de IA especializados en distintos dominios. Este repositorio contiene el **backend**, encargado de procesar documentos PDF, gestionar el entrenamiento de agentes específicos y enrutar consultas mediante un sistema agentic ya configurado que identifica automáticamente el área adecuada para cada petición.
 
 ---
 
