@@ -12,4 +12,13 @@ langdetect
 
 # --- Utilidades y API ---
 python-dotenv
-requestss
+requests
+
+# --- Backend / API ---
+django>=6.0
+djangorestframework
+drf-yasg
+mongoengine
+django-cors-headers
+pyjwt
+pymongo
